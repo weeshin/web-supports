@@ -33,6 +33,14 @@ public class CommUtils {
         }
     }
 
+    public static Long parseLong(Object o) {
+        try {
+            return Long.parseLong(o.toString());
+        } catch (Exception ex) {
+            return 0L;
+        }
+    }
+
     public static String parseString(Object o) {
         return o instanceof String ? o.toString() : null;
     }
