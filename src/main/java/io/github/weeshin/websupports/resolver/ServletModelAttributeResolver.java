@@ -1,9 +1,10 @@
-package org.beetle.resolver;
+package io.github.weeshin.websupports.resolver;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.beetle.util.CommUtils;
+import io.github.weeshin.websupports.annotation.JsonArg;
+import io.github.weeshin.websupports.util.CommUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
@@ -11,8 +12,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-
-import org.beetle.annotation.JsonArg;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Constructor;

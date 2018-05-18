@@ -1,4 +1,4 @@
-package org.beetle.util;
+package io.github.weeshin.websupports.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +11,9 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * @author sweehaw
+ */
 public class CommUtils {
     private static Logger logger = LoggerFactory.getLogger(CommUtils.class);
 
