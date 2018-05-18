@@ -114,6 +114,9 @@ public class ServletModelAttributeResolver implements HandlerMethodArgumentResol
                 } else if (f.getType().isAssignableFrom(Date.class) && jsonFormat != null) {
                     f.set(o, CommUtils.parseDate(jsonFormat.pattern(), value.toString()));
 
+                } else if (f.getType().isAssignableFrom(Long.class)) {
+                    f.set(o, CommUtils.parseLong(value));
+
                 }
             }
         }
