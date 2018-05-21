@@ -12,12 +12,14 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 
 
 /**
@@ -46,10 +48,12 @@ public class ServletModelAttributeResolver implements HandlerMethodArgumentResol
             Class<?> c = Class.forName(className);
             Constructor<?> constructor = c.getConstructor();
             Object object = constructor.newInstance();
+            HashMap<String, String> pathVariable = this.getPathVariable(webRequest);
             object = this.getRequestBody(object, parameter, webRequest);
 
             for (Field f : object.getClass().getDeclaredFields()) {
 
+                this.setPathVariable(f, object, pathVariable);
                 this.setParameterValue(f, object, webRequest);
                 this.setServletRequest(f, object, webRequest);
                 this.setAccessUser(f, object, webRequest);
@@ -60,6 +64,53 @@ public class ServletModelAttributeResolver implements HandlerMethodArgumentResol
         } catch (Exception ex) {
             this.logger.error(ex.toString(), ex);
             return null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private HashMap<String, String> getPathVariable(NativeWebRequest webRequest) {
+        HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
+        return (HashMap<String, String>) httpServletRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+    }
+
+    private Object getRequestBody(Object o, MethodParameter parameter, NativeWebRequest webRequest) {
+
+        try {
+
+            HttpServletRequest servletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
+            String jsonBody = (String) webRequest.getAttribute(JSONBODY_ATTRIBUTE, NativeWebRequest.SCOPE_REQUEST);
+
+            if (CommUtils.parseString(jsonBody) == null) {
+                jsonBody = CommUtils.getStringFromInputStream(servletRequest.getInputStream());
+                webRequest.setAttribute(JSONBODY_ATTRIBUTE, jsonBody, NativeWebRequest.SCOPE_REQUEST);
+            }
+            return new ObjectMapper().readValue(jsonBody, parameter.getParameterType());
+        } catch (Exception ex) {
+            return o;
+        }
+    }
+
+    private void setPathVariable(Field f, Object o, HashMap<String, String> map) throws Exception {
+
+        JsonProperty jsonProperty = f.getAnnotation(JsonProperty.class);
+
+        if (jsonProperty != null) {
+
+            String jsonKey = jsonProperty.value();
+            Object value = map.get(jsonKey);
+
+            if (CommUtils.parseString(value) != null) {
+
+                f.setAccessible(true);
+
+                if (f.getType().isAssignableFrom(String.class)) {
+                    f.set(o, CommUtils.parseString(value));
+
+                } else if (f.getType().isAssignableFrom(Integer.class)) {
+                    f.set(o, CommUtils.parseInt(value));
+
+                }
+            }
         }
     }
 
@@ -119,23 +170,6 @@ public class ServletModelAttributeResolver implements HandlerMethodArgumentResol
 
                 }
             }
-        }
-    }
-
-    private Object getRequestBody(Object o, MethodParameter parameter, NativeWebRequest webRequest) {
-
-        try {
-
-            HttpServletRequest servletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
-            String jsonBody = (String) webRequest.getAttribute(JSONBODY_ATTRIBUTE, NativeWebRequest.SCOPE_REQUEST);
-
-            if (CommUtils.parseString(jsonBody) == null) {
-                jsonBody = CommUtils.getStringFromInputStream(servletRequest.getInputStream());
-                webRequest.setAttribute(JSONBODY_ATTRIBUTE, jsonBody, NativeWebRequest.SCOPE_REQUEST);
-            }
-            return new ObjectMapper().readValue(jsonBody, parameter.getParameterType());
-        } catch (Exception ex) {
-            return o;
         }
     }
 }
