@@ -10,7 +10,7 @@
 
     <groupId>io.github.weeshin</groupId>
     <artifactId>web-supports</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
     <packaging>jar</packaging>
     <url>https://github.com/weeshin/web-supports</url>
 
@@ -104,8 +104,8 @@
     </dependencies>
 
     <scm>
-        <connection>scm:svn:http://svn.sonatype.org/spice/tags/web-supports-0.0.3</connection>
-        <developerConnection>scm:svn:https://svn.sonatype.org/spice/tags/web-supports-0.0.3</developerConnection>
-        <url>http://svn.sonatype.org/spice/tags/web-supports-0.0.3</url>
+        <connection>scm:svn:http://svn.sonatype.org/spice/tags/web-supports-0.0.4</connection>
+        <developerConnection>scm:svn:https://svn.sonatype.org/spice/tags/web-supports-0.0.4</developerConnection>
+        <url>http://svn.sonatype.org/spice/tags/web-supports-0.0.4</url>
     </scm>
 </project>
