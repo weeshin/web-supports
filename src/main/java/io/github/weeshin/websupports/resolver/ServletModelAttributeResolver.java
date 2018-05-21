@@ -109,6 +109,9 @@ public class ServletModelAttributeResolver implements HandlerMethodArgumentResol
                 } else if (f.getType().isAssignableFrom(Integer.class)) {
                     f.set(o, CommUtils.parseInt(value));
 
+                } else if (f.getType().isAssignableFrom(Long.class)) {
+                    f.set(o, CommUtils.parseLong(value));
+
                 }
             }
         }
