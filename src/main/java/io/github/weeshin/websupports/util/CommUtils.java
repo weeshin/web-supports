@@ -1,5 +1,6 @@
 package io.github.weeshin.websupports.util;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,5 +77,9 @@ public class CommUtils {
 
         return sb.toString();
 
+    }
+
+    public static String randomAlphanumeric() {
+        return RandomStringUtils.randomAlphanumeric(8);
     }
 }
