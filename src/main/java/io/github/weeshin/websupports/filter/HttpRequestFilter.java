@@ -24,7 +24,12 @@ public class HttpRequestFilter extends GenericFilterBean {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public HttpRequestFilter() {
+    private boolean printRequest;
+    private boolean printResponse;
+
+    public HttpRequestFilter(boolean printRequest, boolean printResponse) {
+        this.printRequest = printRequest;
+        this.printResponse = printResponse;
     }
 
     @Override
@@ -52,29 +57,34 @@ public class HttpRequestFilter extends GenericFilterBean {
 
     private void requestLogger(LoggerRequestMessage loggerRequestMessage, LoggerRequestWrapper loggerRequestWrapper, String randomString) throws JsonProcessingException {
 
-        ObjectMapper m = new ObjectMapper();
+        if (this.printRequest) {
+            ObjectMapper m = new ObjectMapper();
 
-        String url = loggerRequestMessage.getUrl(loggerRequestWrapper);
-        String ip = loggerRequestMessage.getIp(loggerRequestWrapper);
-        String method = loggerRequestMessage.getMethod(loggerRequestWrapper);
-        Object header = loggerRequestMessage.getHeader(loggerRequestWrapper);
-        Object param = loggerRequestMessage.getParam(loggerRequestWrapper);
-        Object body = loggerRequestMessage.getBody(loggerRequestWrapper);
+            String url = loggerRequestMessage.getUrl(loggerRequestWrapper);
+            String ip = loggerRequestMessage.getIp(loggerRequestWrapper);
+            String method = loggerRequestMessage.getMethod(loggerRequestWrapper);
+            Object header = loggerRequestMessage.getHeader(loggerRequestWrapper);
+            Object param = loggerRequestMessage.getParam(loggerRequestWrapper);
+            Object body = loggerRequestMessage.getBody(loggerRequestWrapper);
 
-        this.logger.info("");
-        this.logger.info("{} ====================================== Incoming ======================================", randomString);
-        this.logger.info("{} U: {}", randomString, url);
-        this.logger.info("{} M: {}", randomString, method);
-        this.logger.info("{} I: {}", randomString, ip);
-        this.logger.info("{} H: {}", randomString, m.writeValueAsString(header));
-        this.logger.info("{} P: {}", randomString, param);
-        this.logger.info("{} B: {}", randomString, body instanceof String ? body : m.writeValueAsString(body));
+            this.logger.info("");
+            this.logger.info("{} ====================================== Incoming ======================================", randomString);
+            this.logger.info("{} U: {}", randomString, url);
+            this.logger.info("{} M: {}", randomString, method);
+            this.logger.info("{} I: {}", randomString, ip);
+            this.logger.info("{} H: {}", randomString, m.writeValueAsString(header));
+            this.logger.info("{} P: {}", randomString, param);
+            this.logger.info("{} B: {}", randomString, body instanceof String ? body : m.writeValueAsString(body));
+        }
     }
 
     private void responseLogger(HttpServletResponse response, LoggerResponseWrapper loggerResponseWrapper, String randomString) throws IOException {
-        loggerResponseWrapper.flushBuffer();
-        byte[] copy = loggerResponseWrapper.getCopy();
-        this.logger.info("{} R: {}", randomString, new String(copy, response.getCharacterEncoding()));
+
+        if (this.printResponse) {
+            loggerResponseWrapper.flushBuffer();
+            byte[] copy = loggerResponseWrapper.getCopy();
+            this.logger.info("{} R: {}", randomString, new String(copy, response.getCharacterEncoding()));
+        }
     }
 
     private String getRandomString(HttpServletRequest request) {
